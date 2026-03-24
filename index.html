@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeCalcPro – Professional Trading Calculator</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #0d47a1;
+            --accent: #00c853;
+            --dark: #0a0e1a;
+            --dark2: #111827;
+            --card: #1a2235;
+            --border: #2a3550;
+            --text: #e8eaf0;
+            --muted: #8892a4;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* ── LANG BAR ── */
+        .lang-bar {
+            background: var(--dark2);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 24px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .lang-btn {
+            background: none;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            color: var(--muted);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .lang-btn:hover { border-color: var(--primary); color: var(--text); }
+        .lang-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .lang-btn .flag { font-size: 1.1rem; }
+
+        /* ── HERO ── */
+        .hero {
+            background: linear-gradient(135deg, #0a0e1a 0%, #0d1b3e 50%, #0a1628 100%);
+            padding: 80px 24px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at center, rgba(26,115,232,0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(0,200,83,0.15);
+            border: 1px solid rgba(0,200,83,0.4);
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .hero h1 {
+            font-size: clamp(2.4rem, 6vw, 4rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 30%, #82b1ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+        .hero .tagline {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            color: #90caf9;
+            max-width: 680px;
+            margin: 0 auto 36px;
+        }
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+        .stat { text-align: center; }
+        .stat .num { font-size: 2rem; font-weight: 800; color: var(--accent); }
+        .stat .lbl { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--primary);
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 16px 36px;
+            border-radius: 12px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 24px rgba(26,115,232,0.35);
+        }
+        .cta-btn:hover { background: #1557b0; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(26,115,232,0.5); }
+
+        /* ── SECTIONS ── */
+        .section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 64px 24px;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        .section-sub {
+            color: var(--muted);
+            margin-bottom: 40px;
+            font-size: 1rem;
+        }
+
+        /* ── FEATURES GRID ── */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .feature-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            transition: all 0.25s;
+        }
+        .feature-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(26,115,232,0.15);
+        }
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .feature-card p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+        /* ── TOOLS LIST ── */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+        .tool-item {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.9rem;
+            color: var(--text);
+            transition: border-color 0.2s;
+        }
+        .tool-item:hover { border-color: var(--accent); }
+        .tool-item .icon { font-size: 1.4rem; }
+
+        /* ── LANGUAGES ── */
+        .lang-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .lang-chip {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.88rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ── PRICING ── */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .price-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px 28px;
+            position: relative;
+        }
+        .price-card.featured {
+            border-color: var(--primary);
+            box-shadow: 0 0 40px rgba(26,115,232,0.2);
+        }
+        .price-card .badge-feat {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 16px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .price-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+        .price-card .price { font-size: 2.2rem; font-weight: 800; color: var(--accent); margin: 12px 0; }
+        .price-card .price span { font-size: 0.9rem; color: var(--muted); font-weight: 400; }
+        .price-card ul { list-style: none; margin-top: 16px; }
+        .price-card ul li {
+            padding: 6px 0;
+            font-size: 0.88rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .price-card ul li::before { content: '✓'; color: var(--accent); font-weight: 700; }
+
+        /* ── FOOTER ── */
+        footer {
+            background: var(--dark2);
+            border-top: 1px solid var(--border);
+            padding: 32px 24px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+        footer a { color: var(--primary); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        /* ── I18N CONTENT ── */
+        [data-lang] { display: none; }
+        [data-lang].visible { display: block; }
+        [data-lang-inline] { display: none; }
+        [data-lang-inline].visible { display: inline; }
+
+        @media (max-width: 600px) {
+            .hero-stats { gap: 24px; }
+            .stat .num { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════ LANGUAGE BAR ══ -->
+<div class="lang-bar">
+    <button class="lang-btn active" onclick="setLang('en')"><span class="flag">🇬🇧</span> EN</button>
+    <button class="lang-btn" onclick="setLang('it')"><span class="flag">🇮🇹</span> IT</button>
+    <button class="lang-btn" onclick="setLang('fr')"><span class="flag">🇫🇷</span> FR</button>
+    <button class="lang-btn" onclick="setLang('es')"><span class="flag">🇪🇸</span> ES</button>
+    <button class="lang-btn" onclick="setLang('de')"><span class="flag">🇩🇪</span> DE</button>
+    <button class="lang-btn" onclick="setLang('pt')"><span class="flag">🇵🇹</span> PT</button>
+    <button class="lang-btn" onclick="setLang('nl')"><span class="flag">🇳🇱</span> NL</button>
+    <button class="lang-btn" onclick="setLang('pl')"><span class="flag">🇵🇱</span> PL</button>
+    <button class="lang-btn" onclick="setLang('tr')"><span class="flag">🇹🇷</span> TR</button>
+    <button class="lang-btn" onclick="setLang('ro')"><span class="flag">🇷🇴</span> RO</button>
+    <button class="lang-btn" onclick="setLang('cs')"><span class="flag">🇨🇿</span> CS</button>
+    <button class="lang-btn" onclick="setLang('hu')"><span class="flag">🇭🇺</span> HU</button>
+    <button class="lang-btn" onclick="setLang('el')"><span class="flag">🇬🇷</span> EL</button>
+    <button class="lang-btn" onclick="setLang('ru')"><span class="flag">🇷🇺</span> RU</button>
+    <button class="lang-btn" onclick="setLang('uk')"><span class="flag">🇺🇦</span> UK</button>
+</div>
+
+<!-- ══════════════════════════════════════ HERO ══ -->
+<section class="hero">
+    <div class="hero-badge" data-lang="en visible">Professional Trading Suite</div>
+    <div class="hero-badge" data-lang="it">Suite Professionale per il Trading</div>
+    <div class="hero-badge" data-lang="fr">Suite Professionnelle de Trading</div>
+    <div class="hero-badge" data-lang="es">Suite Profesional de Trading</div>
+    <div class="hero-badge" data-lang="de">Professionelle Trading-Suite</div>
+    <div class="hero-badge" data-lang="pt">Suite Profissional de Trading</div>
+    <div class="hero-badge" data-lang="nl">Professionele Trading Suite</div>
+    <div class="hero-badge" data-lang="pl">Profesjonalna Platforma Tradingowa</div>
+    <div class="hero-badge" data-lang="tr">Profesyonel Ticaret Paketi</div>
+    <div class="hero-badge" data-lang="ro">Suită Profesională de Trading</div>
+    <div class="hero-badge" data-lang="cs">Profesionální Obchodní Suite</div>
+    <div class="hero-badge" data-lang="hu">Professzionális Kereskedési Csomag</div>
+    <div class="hero-badge" data-lang="el">Επαγγελματική Σουίτα Trading</div>
+    <div class="hero-badge" data-lang="ru">Профессиональный Торговый Пакет</div>
+    <div class="hero-badge" data-lang="uk">Професійний Торговий Пакет</div>
+
+    <h1>TradeCalcPro</h1>
+
+    <p class="tagline" data-lang="en visible">The all-in-one financial calculator for serious traders. Stocks, Options, Futures, Forex, Crypto and ETFs — all in your pocket.</p>
+    <p class="tagline" data-lang="it">Il calcolatore finanziario all-in-one per trader seri. Azioni, Opzioni, Futures, Forex, Crypto ed ETF — tutto in tasca.</p>
+    <p class="tagline" data-lang="fr">La calculatrice financière tout-en-un pour les traders sérieux. Actions, Options, Futures, Forex, Crypto et ETF — dans votre poche.</p>
+    <p class="tagline" data-lang="es">La calculadora financiera todo en uno para traders serios. Acciones, Opciones, Futuros, Forex, Cripto y ETF — todo en tu bolsillo.</p>
+    <p class="tagline" data-lang="de">Der All-in-One-Finanzrechner für ernsthafte Trader. Aktien, Optionen, Futures, Forex, Krypto und ETFs — alles in Ihrer Tasche.</p>
+    <p class="tagline" data-lang="pt">A calculadora financeira tudo-em-um para traders sérios. Ações, Opções, Futuros, Forex, Cripto e ETFs — tudo no seu bolso.</p>
+    <p class="tagline" data-lang="nl">De alles-in-één financiële rekenmachine voor serieuze traders. Aandelen, Opties, Futures, Forex, Crypto en ETF's — alles in uw zak.</p>
+    <p class="tagline" data-lang="pl">Kompleksowy kalkulator finansowy dla poważnych traderów. Akcje, Opcje, Kontrakty, Forex, Krypto i ETF — wszystko w kieszeni.</p>
+    <p class="tagline" data-lang="tr">Ciddi yatırımcılar için hepsi bir arada finansal hesap makinesi. Hisse, Opsiyon, Vadeli, Forex, Kripto ve ETF — cebinizde.</p>
+    <p class="tagline" data-lang="ro">Calculatorul financiar all-in-one pentru traderi serioși. Acțiuni, Opțiuni, Futures, Forex, Cripto și ETF — totul în buzunar.</p>
+    <p class="tagline" data-lang="cs">Komplexní finanční kalkulačka pro seriózní obchodníky. Akcie, Opce, Futures, Forex, Krypto a ETF — vše v kapse.</p>
+    <p class="tagline" data-lang="hu">Az all-in-one pénzügyi kalkulátor komoly kereskedők számára. Részvények, Opciók, Futures, Forex, Kripto és ETF — zsebedben.</p>
+    <p class="tagline" data-lang="el">Ο all-in-one χρηματοοικονομικός υπολογιστής για σοβαρούς traders. Μετοχές, Δικαιώματα, Συμβόλαια, Forex, Κρυπτό και ETF.</p>
+    <p class="tagline" data-lang="ru">Универсальный финансовый калькулятор для серьёзных трейдеров. Акции, Опционы, Фьючерсы, Форекс, Крипто и ETF.</p>
+    <p class="tagline" data-lang="uk">Універсальний фінансовий калькулятор для серйозних трейдерів. Акції, Опціони, Ф'ючерси, Форекс, Крипто та ETF.</p>
+
+    <div class="hero-stats">
+        <div class="stat"><div class="num">15+</div><div class="lbl" data-lang="en visible">Languages</div><div class="lbl" data-lang="it">Lingue</div><div class="lbl" data-lang="fr">Langues</div><div class="lbl" data-lang="es">Idiomas</div><div class="lbl" data-lang="de">Sprachen</div><div class="lbl" data-lang="pt">Idiomas</div><div class="lbl" data-lang="nl">Talen</div><div class="lbl" data-lang="pl">Języki</div><div class="lbl" data-lang="tr">Dil</div><div class="lbl" data-lang="ro">Limbi</div><div class="lbl" data-lang="cs">Jazyky</div><div class="lbl" data-lang="hu">Nyelv</div><div class="lbl" data-lang="el">Γλώσσες</div><div class="lbl" data-lang="ru">Языков</div><div class="lbl" data-lang="uk">Мов</div></div>
+        <div class="stat"><div class="num">20+</div><div class="lbl" data-lang="en visible">Calculators</div><div class="lbl" data-lang="it">Calcolatori</div><div class="lbl" data-lang="fr">Calculatrices</div><div class="lbl" data-lang="es">Calculadoras</div><div class="lbl" data-lang="de">Rechner</div><div class="lbl" data-lang="pt">Calculadoras</div><div class="lbl" data-lang="nl">Rekenmachines</div><div class="lbl" data-lang="pl">Kalkulatory</div><div class="lbl" data-lang="tr">Hesap Makinesi</div><div class="lbl" data-lang="ro">Calculatoare</div><div class="lbl" data-lang="cs">Kalkulačky</div><div class="lbl" data-lang="hu">Kalkulátor</div><div class="lbl" data-lang="el">Υπολογιστές</div><div class="lbl" data-lang="ru">Калькуляторов</div><div class="lbl" data-lang="uk">Калькуляторів</div></div>
+        <div class="stat"><div class="num">100%</div><div class="lbl" data-lang="en visible">Offline</div><div class="lbl" data-lang="it">Offline</div><div class="lbl" data-lang="fr">Hors ligne</div><div class="lbl" data-lang="es">Sin conexión</div><div class="lbl" data-lang="de">Offline</div><div class="lbl" data-lang="pt">Offline</div><div class="lbl" data-lang="nl">Offline</div><div class="lbl" data-lang="pl">Offline</div><div class="lbl" data-lang="tr">Çevrimdışı</div><div class="lbl" data-lang="ro">Offline</div><div class="lbl" data-lang="cs">Offline</div><div class="lbl" data-lang="hu">Offline</div><div class="lbl" data-lang="el">Εκτός σύνδεσης</div><div class="lbl" data-lang="ru">Офлайн</div><div class="lbl" data-lang="uk">Офлайн</div></div>
+        <div class="stat"><div class="num">6</div><div class="lbl" data-lang="en visible">Asset Classes</div><div class="lbl" data-lang="it">Classi di Asset</div><div class="lbl" data-lang="fr">Classes d'Actifs</div><div class="lbl" data-lang="es">Clases de Activos</div><div class="lbl" data-lang="de">Anlageklassen</div><div class="lbl" data-lang="pt">Classes de Ativos</div><div class="lbl" data-lang="nl">Activaklassen</div><div class="lbl" data-lang="pl">Klasy Aktywów</div><div class="lbl" data-lang="tr">Varlık Sınıfı</div><div class="lbl" data-lang="ro">Clase de Active</div><div class="lbl" data-lang="cs">Třídy Aktiv</div><div class="lbl" data-lang="hu">Eszközosztály</div><div class="lbl" data-lang="el">Κατηγορίες Στοιχείων</div><div class="lbl" data-lang="ru">Классов Активов</div><div class="lbl" data-lang="uk">Класів Активів</div></div>
+    </div>
+
+    <a href="https://play.google.com/store/apps/details?id=com.dctradepro" class="cta-btn">
+        ▶
+        <span data-lang="en visible">Download on Google Play</span>
+        <span data-lang="it">Scarica su Google Play</span>
+        <span data-lang="fr">Télécharger sur Google Play</span>
+        <span data-lang="es">Descargar en Google Play</span>
+        <span data-lang="de">Auf Google Play laden</span>
+        <span data-lang="pt">Baixar no Google Play</span>
+        <span data-lang="nl">Download via Google Play</span>
+        <span data-lang="pl">Pobierz z Google Play</span>
+        <span data-lang="tr">Google Play'den İndir</span>
+        <span data-lang="ro">Descarcă pe Google Play</span>
+        <span data-lang="cs">Stáhnout z Google Play</span>
+        <span data-lang="hu">Letöltés Google Play-ről</span>
+        <span data-lang="el">Λήψη από Google Play</span>
+        <span data-lang="ru">Скачать в Google Play</span>
+        <span data-lang="uk">Завантажити з Google Play</span>
+    </a>
+</section>
+
+<!-- ══════════════════════════════════════ FEATURES ══ -->
+<section class="section">
+    <h2 class="section-title" data-lang="en visible">Everything a trader needs</h2>
+    <h2 class="section-title" data-lang="it">Tutto ciò di cui un trader ha bisogno</h2>
+    <h2 class="section-title" data-lang="fr">Tout ce dont un trader a besoin</h2>
+    <h2 class="section-title" data-lang="es">Todo lo que un trader necesita</h2>
+    <h2 class="section-title" data-lang="de">Alles, was ein Trader braucht</h2>
+    <h2 class="section-title" data-lang="pt">Tudo que um trader precisa</h2>
+    <h2 class="section-title" data-lang="nl">Alles wat een trader nodig heeft</h2>
+    <h2 class="section-title" data-lang="pl">Wszystko czego potrzebuje trader</h2>
+    <h2 class="section-title" data-lang="tr">Bir traderin ihtiyacı olan her şey</h2>
+    <h2 class="section-title" data-lang="ro">Tot ce are nevoie un trader</h2>
+    <h2 class="section-title" data-lang="cs">Vše, co trader potřebuje</h2>
+    <h2 class="section-title" data-lang="hu">Minden, amire egy tradernek szüksége van</h2>
+    <h2 class="section-title" data-lang="el">Όλα όσα χρειάζεται ένας trader</h2>
+    <h2 class="section-title" data-lang="ru">Всё, что нужно трейдеру</h2>
+    <h2 class="section-title" data-lang="uk">Все, що потрібно трейдеру</h2>
+
+    <div class="features-grid">
+
+        <div class="feature-card">
+            <span class="feature-icon">📊</span>
+            <h3 data-lang="en visible">Live Portfolio</h3>
+            <h3 data-lang="it">Portafoglio Live</h3>
+            <h3 data-lang="fr">Portefeuille en Direct</h3>
+            <h3 data-lang="es">Cartera en Vivo</h3>
+            <h3 data-lang="de">Live-Portfolio</h3>
+            <h3 data-lang="pt">Portfólio ao Vivo</h3>
+            <h3 data-lang="nl">Live Portfolio</h3>
+            <h3 data-lang="pl">Portfel na Żywo</h3>
+            <h3 data-lang="tr">Canlı Portföy</h3>
+            <h3 data-lang="ro">Portofoliu Live</h3>
+            <h3 data-lang="cs">Živé Portfolio</h3>
+            <h3 data-lang="hu">Élő Portfólió</h3>
+            <h3 data-lang="el">Ζωντανό Χαρτοφυλάκιο</h3>
+            <h3 data-lang="ru">Живой Портфель</h3>
+            <h3 data-lang="uk">Живий Портфель</h3>
+            <p data-lang="en visible">Track all your positions in real time. Unrealized P&L, allocation breakdown, rebalancing suggestions — all in one view.</p>
+            <p data-lang="it">Monitora tutte le tue posizioni in tempo reale. P&L non realizzato, distribuzione del portafoglio e suggerimenti di ribilanciamento — tutto in una schermata.</p>
+            <p data-lang="fr">Suivez toutes vos positions en temps réel. P&L latent, répartition du portefeuille et suggestions de rééquilibrage.</p>
+            <p data-lang="es">Sigue todas tus posiciones en tiempo real. P&L no realizado, distribución de cartera y sugerencias de reequilibrio.</p>
+            <p data-lang="de">Verfolgen Sie alle Positionen in Echtzeit. Unrealisiertes P&L, Portfolio-Aufteilung und Neugewichtungsvorschläge.</p>
+            <p data-lang="pt">Acompanhe todas as suas posições em tempo real. P&L não realizado, distribuição e sugestões de rebalanceamento.</p>
+            <p data-lang="nl">Volg al uw posities in real-time. Ongerealiseerde P&L, allocatie en herbalanceringsuggesties.</p>
+            <p data-lang="pl">Śledź wszystkie pozycje w czasie rzeczywistym. Niezrealizowany P&L, alokacja i sugestie rebalansowania.</p>
+            <p data-lang="tr">Tüm pozisyonlarınızı gerçek zamanlı takip edin. Gerçekleşmemiş K/Z, dağılım ve dengeleme önerileri.</p>
+            <p data-lang="ro">Urmăriți toate pozițiile în timp real. P&L nerealizat, alocare și sugestii de reechilibrare.</p>
+            <p data-lang="cs">Sledujte všechny pozice v reálném čase. Nerealizovaný P&L, alokace a návrhy rebalancování.</p>
+            <p data-lang="hu">Kövesse nyomon az összes pozíciót valós időben. Nem realizált P&L, allokáció és újraegyensúlyozási javaslatok.</p>
+            <p data-lang="el">Παρακολουθείτε όλες τις θέσεις σε πραγματικό χρόνο. Μη πραγματοποιηθέν P&L, κατανομή και προτάσεις εξισορρόπησης.</p>
+            <p data-lang="ru">Отслеживайте все позиции в реальном времени. Нереализованный P&L, распределение и предложения по ребалансировке.</p>
+            <p data-lang="uk">Відстежуйте всі позиції в реальному часі. Нереалізований P&L, розподіл і пропозиції щодо ребалансування.</p>
+        </div>
+
+        <div class="feature-card">
+            <span class="feature-icon">📈</span>
+            <h3 data-lang="en visible">Live Charts (TradingView)</h3>
+            <h3 data-lang="it">Grafici Live (TradingView)</h3>
+            <h3 data-lang="fr">Graphiques en Direct (TradingView)</h3>
+            <h3 data-lang="es">Gráficos en Vivo (TradingView)</h3>
+            <h3 data-lang="de">Live-Charts (TradingView)</h3>
+            <h3 data-lang="pt">Gráficos ao Vivo (TradingView)</h3>
+            <h3 data-lang="nl">Live Grafieken (TradingView)</h3>
+            <h3 data-lang="pl">Wykresy na Żywo (TradingView)</h3>
+            <h3 data-lang="tr">Canlı Grafikler (TradingView)</h3>
+            <h3 data-lang="ro">Grafice Live (TradingView)</h3>
+            <h3 data-lang="cs">Živé Grafy (TradingView)</h3>
+            <h3 data-lang="hu">Élő Grafikonok (TradingView)</h3>
+            <h3 data-lang="el">Ζωντανά Γραφήματα (TradingView)</h3>
+            <h3 data-lang="ru">Живые Графики (TradingView)</h3>
+            <h3 data-lang="uk">Живі Графіки (TradingView)</h3>
+            <p data-lang="en visible">Integrated TradingView charts for any symbol. Analyze the market without leaving the app, with real-time candlestick data.</p>
+            <p data-lang="it">Grafici TradingView integrati per qualsiasi simbolo. Analizza il mercato senza uscire dall'app, con dati candlestick in tempo reale.</p>
+            <p data-lang="fr">Graphiques TradingView intégrés pour tout symbole. Analysez le marché sans quitter l'application.</p>
+            <p data-lang="es">Gráficos TradingView integrados para cualquier símbolo. Analiza el mercado sin salir de la app.</p>
+            <p data-lang="de">Integrierte TradingView-Charts für jedes Symbol. Analysieren Sie den Markt ohne die App zu verlassen.</p>
+            <p data-lang="pt">Gráficos TradingView integrados para qualquer símbolo. Analise o mercado sem sair do app.</p>
+            <p data-lang="nl">Geïntegreerde TradingView-grafieken voor elk symbool. Analyseer de markt zonder de app te verlaten.</p>
+            <p data-lang="pl">Zintegrowane wykresy TradingView dla każdego symbolu. Analizuj rynek bez wychodzenia z aplikacji.</p>
+            <p data-lang="tr">Her sembol için entegre TradingView grafikleri. Uygulamadan çıkmadan piyasayı analiz edin.</p>
+            <p data-lang="ro">Grafice TradingView integrate pentru orice simbol. Analizați piața fără să părăsiți aplicația.</p>
+            <p data-lang="cs">Integrované grafy TradingView pro jakýkoli symbol. Analyzujte trh bez opuštění aplikace.</p>
+            <p data-lang="hu">Integrált TradingView grafikonok bármely szimbólumhoz. Elemezze a piacot az app elhagyása nélkül.</p>
+            <p data-lang="el">Ενσωματωμένα γραφήματα TradingView για κάθε σύμβολο. Αναλύστε την αγορά χωρίς να βγείτε από την εφαρμογή.</p>
+            <p data-lang="ru">Встроенные графики TradingView для любого символа. Анализируйте рынок не выходя из приложения.</p>
+            <p data-lang="uk">Вбудовані графіки TradingView для будь-якого символу. Аналізуйте ринок не виходячи з додатку.</p>
+        </div>
+
+        <div class="feature-card">
+            <span class="feature-icon">📓</span>
+            <h3 data-lang="en visible">Trading Journal</h3>
+            <h3 data-lang="it">Diario di Trading</h3>
+            <h3 data-lang="fr">Journal de Trading</h3>
+            <h3 data-lang="es">Diario de Trading</h3>
+            <h3 data-lang="de">Trading-Tagebuch</h3>
+            <h3 data-lang="pt">Diário de Trading</h3>
+            <h3 data-lang="nl">Trading Journaal</h3>
+            <h3 data-lang="pl">Dziennik Tradingowy</h3>
+            <h3 data-lang="tr">İşlem Günlüğü</h3>
+            <h3 data-lang="ro">Jurnal de Trading</h3>
+            <h3 data-lang="cs">Obchodní Deník</h3>
+            <h3 data-lang="hu">Kereskedési Napló</h3>
+            <h3 data-lang="el">Ημερολόγιο Trading</h3>
+            <h3 data-lang="ru">Торговый Журнал</h3>
+            <h3 data-lang="uk">Торговий Журнал</h3>
+            <p data-lang="en visible">Log every trade with full detail. Performance analytics, win rate, best/worst trades and equity curve — know exactly where you stand.</p>
+            <p data-lang="it">Registra ogni operazione con tutti i dettagli. Analytics sulle performance, win rate, migliori/peggiori operazioni e curva del capitale.</p>
+            <p data-lang="fr">Enregistrez chaque trade en détail. Analytics, taux de réussite, meilleures/pires trades et courbe d'équité.</p>
+            <p data-lang="es">Registra cada operación con detalle. Analytics, tasa de éxito, mejores/peores operaciones y curva de equity.</p>
+            <p data-lang="de">Protokollieren Sie jeden Trade mit allen Details. Performance-Analytics, Win-Rate, beste/schlechteste Trades und Eigenkapitalkurve.</p>
+            <p data-lang="pt">Registre cada operação com detalhes. Analytics, taxa de acerto, melhores/piores operações e curva de equity.</p>
+            <p data-lang="nl">Log elke trade met alle details. Prestatieanalyses, winstpercentage, beste/slechtste trades en equity curve.</p>
+            <p data-lang="pl">Rejestruj każdą transakcję ze szczegółami. Analityka, wskaźnik wygranych, najlepsze/najgorsze transakcje i krzywa equity.</p>
+            <p data-lang="tr">Her işlemi ayrıntılı kaydedin. Performans analitiği, kazanma oranı, en iyi/kötü işlemler ve sermaye eğrisi.</p>
+            <p data-lang="ro">Înregistrați fiecare tranzacție detaliat. Analize de performanță, rata de câștig și curba de equity.</p>
+            <p data-lang="cs">Zaznamenejte každý obchod s detaily. Výkonnostní analýza, míra výher a křivka kapitálu.</p>
+            <p data-lang="hu">Naplózza az összes kereskedést részletesen. Teljesítményelemzés, nyerési arány és tőkegörbe.</p>
+            <p data-lang="el">Καταγράψτε κάθε συναλλαγή λεπτομερώς. Ανάλυση απόδοσης, ποσοστό κερδών και καμπύλη κεφαλαίου.</p>
+            <p data-lang="ru">Записывайте каждую сделку подробно. Аналитика производительности, процент прибыльных сделок и кривая капитала.</p>
+            <p data-lang="uk">Записуйте кожну угоду детально. Аналітика продуктивності, відсоток прибуткових угод і крива капіталу.</p>
+        </div>
+
+        <div class="feature-card">
+            <span class="feature-icon">🎯</span>
+            <h3 data-lang="en visible">Options & Greeks</h3>
+            <h3 data-lang="it">Opzioni e Greeks</h3>
+            <h3 data-lang="fr">Options et Greeks</h3>
+            <h3 data-lang="es">Opciones y Griegas</h3>
+            <h3 data-lang="de">Optionen & Greeks</h3>
+            <h3 data-lang="pt">Opções e Gregas</h3>
+            <h3 data-lang="nl">Opties & Grieken</h3>
+            <h3 data-lang="pl">Opcje i Grecy</h3>
+            <h3 data-lang="tr">Opsiyonlar ve Yunanlılar</h3>
+            <h3 data-lang="ro">Opțiuni și Greci</h3>
+            <h3 data-lang="cs">Opce a Řekové</h3>
+            <h3 data-lang="hu">Opciók és Görögök</h3>
+            <h3 data-lang="el">Δικαιώματα και Greeks</h3>
+            <h3 data-lang="ru">Опционы и Греки</h3>
+            <h3 data-lang="uk">Опціони і Греки</h3>
+            <p data-lang="en visible">Full Black-Scholes calculator with Delta, Gamma, Theta, Vega, Rho. Straddle strategy analyzer included. Built for options traders.</p>
+            <p data-lang="it">Calcolatore Black-Scholes completo con Delta, Gamma, Theta, Vega, Rho. Analisi strategia Straddle inclusa. Progettato per i trader di opzioni.</p>
+            <p data-lang="fr">Calculateur Black-Scholes complet avec Delta, Gamma, Theta, Vega, Rho. Analyseur de stratégie Straddle inclus.</p>
+            <p data-lang="es">Calculadora Black-Scholes completa con Delta, Gamma, Theta, Vega, Rho. Analizador de estrategia Straddle incluido.</p>
+            <p data-lang="de">Vollständiger Black-Scholes-Rechner mit Delta, Gamma, Theta, Vega, Rho. Straddle-Strategieanalysator inklusive.</p>
+            <p data-lang="pt">Calculadora Black-Scholes completa com Delta, Gamma, Theta, Vega, Rho. Analisador de estratégia Straddle incluído.</p>
+            <p data-lang="nl">Complete Black-Scholes calculator met Delta, Gamma, Theta, Vega, Rho. Straddle strategie-analysator inbegrepen.</p>
+            <p data-lang="pl">Pełny kalkulator Black-Scholes z Delta, Gamma, Theta, Vega, Rho. Analizator strategii Straddle w zestawie.</p>
+            <p data-lang="tr">Delta, Gamma, Theta, Vega, Rho ile tam Black-Scholes hesaplayıcısı. Straddle strateji analizörü dahil.</p>
+            <p data-lang="ro">Calculator Black-Scholes complet cu Delta, Gamma, Theta, Vega, Rho. Analizor strategie Straddle inclus.</p>
+            <p data-lang="cs">Úplný Black-Scholes kalkulátor s Delta, Gamma, Theta, Vega, Rho. Zahrnuje analyzátor strategie Straddle.</p>
+            <p data-lang="hu">Teljes Black-Scholes kalkulátor Delta, Gamma, Theta, Vega, Rho értékekkel. Straddle stratégiaelemző mellékelve.</p>
+            <p data-lang="el">Πλήρης υπολογιστής Black-Scholes με Delta, Gamma, Theta, Vega, Rho. Περιλαμβάνει αναλυτή στρατηγικής Straddle.</p>
+            <p data-lang="ru">Полный калькулятор Black-Scholes с Delta, Gamma, Theta, Vega, Rho. Включён анализатор стратегии Straddle.</p>
+            <p data-lang="uk">Повний калькулятор Black-Scholes з Delta, Gamma, Theta, Vega, Rho. Включено аналізатор стратегії Straddle.</p>
+        </div>
+
+        <div class="feature-card">
+            <span class="feature-icon">⚡</span>
+            <h3 data-lang="en visible">Quick Trade P&L</h3>
+            <h3 data-lang="it">Quick Trade P&L</h3>
+            <h3 data-lang="fr">Quick Trade P&L</h3>
+            <h3 data-lang="es">Quick Trade P&L</h3>
+            <h3 data-lang="de">Quick Trade P&L</h3>
+            <h3 data-lang="pt">Quick Trade P&L</h3>
+            <h3 data-lang="nl">Quick Trade P&L</h3>
+            <h3 data-lang="pl">Quick Trade P&L</h3>
+            <h3 data-lang="tr">Hızlı İşlem K/Z</h3>
+            <h3 data-lang="ro">Quick Trade P&L</h3>
+            <h3 data-lang="cs">Quick Trade P&L</h3>
+            <h3 data-lang="hu">Quick Trade P&L</h3>
+            <h3 data-lang="el">Quick Trade P&L</h3>
+            <h3 data-lang="ru">Быстрый P&L</h3>
+            <h3 data-lang="uk">Швидкий P&L</h3>
+            <p data-lang="en visible">Instant P&L calculation for any trade. Long or short, any market. Enter price, quantity and exit — see profit or loss instantly.</p>
+            <p data-lang="it">Calcolo istantaneo del P&L per qualsiasi operazione. Long o short, qualsiasi mercato. Inserisci prezzo, quantità e uscita — vedi subito il risultato.</p>
+            <p data-lang="fr">Calcul instantané du P&L pour n'importe quel trade. Long ou short, tout marché.</p>
+            <p data-lang="es">Cálculo instantáneo de P&L para cualquier operación. Long o short, cualquier mercado.</p>
+            <p data-lang="de">Sofortige P&L-Berechnung für jeden Trade. Long oder Short, jeder Markt.</p>
+            <p data-lang="pt">Cálculo instantâneo de P&L para qualquer operação. Long ou short, qualquer mercado.</p>
+            <p data-lang="nl">Onmiddellijke P&L berekening voor elke trade. Long of short, elke markt.</p>
+            <p data-lang="pl">Natychmiastowe obliczenie P&L dla każdej transakcji. Long lub short, każdy rynek.</p>
+            <p data-lang="tr">Herhangi bir işlem için anında K/Z hesaplama. Long veya short, her piyasa.</p>
+            <p data-lang="ro">Calcul instantaneu P&L pentru orice tranzacție. Long sau short, orice piață.</p>
+            <p data-lang="cs">Okamžitý výpočet P&L pro jakýkoli obchod. Long nebo short, jakýkoli trh.</p>
+            <p data-lang="hu">Azonnali P&L számítás bármely kereskedéshez. Long vagy short, bármely piac.</p>
+            <p data-lang="el">Άμεσος υπολογισμός P&L για κάθε συναλλαγή. Long ή short, κάθε αγορά.</p>
+            <p data-lang="ru">Мгновенный расчёт P&L для любой сделки. Лонг или шорт, любой рынок.</p>
+            <p data-lang="uk">Миттєвий розрахунок P&L для будь-якої угоди. Лонг або шорт, будь-який ринок.</p>
+        </div>
+
+        <div class="feature-card">
+            <span class="feature-icon">🛡️</span>
+            <h3 data-lang="en visible">Risk Management</h3>
+            <h3 data-lang="it">Gestione del Rischio</h3>
+            <h3 data-lang="fr">Gestion du Risque</h3>
+            <h3 data-lang="es">Gestión del Riesgo</h3>
+            <h3 data-lang="de">Risikomanagement</h3>
+            <h3 data-lang="pt">Gestão de Risco</h3>
+            <h3 data-lang="nl">Risicobeheer</h3>
+            <h3 data-lang="pl">Zarządzanie Ryzykiem</h3>
+            <h3 data-lang="tr">Risk Yönetimi</h3>
+            <h3 data-lang="ro">Managementul Riscului</h3>
+            <h3 data-lang="cs">Řízení Rizik</h3>
+            <h3 data-lang="hu">Kockázatkezelés</h3>
+            <h3 data-lang="el">Διαχείριση Κινδύνου</h3>
+            <h3 data-lang="ru">Управление Рисками</h3>
+            <h3 data-lang="uk">Управління Ризиками</h3>
+            <p data-lang="en visible">Position sizing, risk/reward ratio, stop-loss calculator and breakeven analysis. Never risk more than you can afford to lose.</p>
+            <p data-lang="it">Dimensionamento della posizione, rapporto rischio/rendimento, calcolo dello stop-loss e analisi del breakeven. Non rischiare mai più di quanto puoi permetterti.</p>
+            <p data-lang="fr">Dimensionnement de position, ratio risque/rendement, calculateur de stop-loss et analyse du seuil de rentabilité.</p>
+            <p data-lang="es">Dimensionamiento de posición, relación riesgo/beneficio, calculadora de stop-loss y análisis de breakeven.</p>
+            <p data-lang="de">Positionsgrößenbestimmung, Risiko/Rendite-Verhältnis, Stop-Loss-Rechner und Breakeven-Analyse.</p>
+            <p data-lang="pt">Dimensionamento de posição, relação risco/retorno, calculadora de stop-loss e análise de breakeven.</p>
+            <p data-lang="nl">Positie-sizing, risico/rendement verhouding, stop-loss calculator en breakeven analyse.</p>
+            <p data-lang="pl">Wielkość pozycji, stosunek ryzyko/zysk, kalkulator stop-loss i analiza breakeven.</p>
+            <p data-lang="tr">Pozisyon boyutlandırma, risk/getiri oranı, stop-loss hesaplayıcısı ve başa baş analizi.</p>
+            <p data-lang="ro">Dimensionarea poziției, raport risc/recompensă, calculator stop-loss și analiza pragului de rentabilitate.</p>
+            <p data-lang="cs">Velikost pozice, poměr rizika/odměny, kalkulátor stop-loss a analýza bodu zvratu.</p>
+            <p data-lang="hu">Pozícióméretezés, kockázat/hozam arány, stop-loss kalkulátor és fedezeti pont elemzés.</p>
+            <p data-lang="el">Μέγεθος θέσης, αναλογία κινδύνου/ανταμοιβής, υπολογιστής stop-loss και ανάλυση breakeven.</p>
+            <p data-lang="ru">Размер позиции, соотношение риска/прибыли, калькулятор стоп-лосс и анализ безубыточности.</p>
+            <p data-lang="uk">Розмір позиції, співвідношення ризику/прибутку, калькулятор стоп-лос і аналіз беззбитковості.</p>
+        </div>
+
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════ TOOLS ══ -->
+<section class="section" style="background: var(--dark2); max-width:100%; padding: 64px 0;">
+<div style="max-width:1100px; margin:0 auto; padding: 0 24px;">
+    <h2 class="section-title" data-lang="en visible">All Calculators</h2>
+    <h2 class="section-title" data-lang="it">Tutti i Calcolatori</h2>
+    <h2 class="section-title" data-lang="fr">Toutes les Calculatrices</h2>
+    <h2 class="section-title" data-lang="es">Todas las Calculadoras</h2>
+    <h2 class="section-title" data-lang="de">Alle Rechner</h2>
+    <h2 class="section-title" data-lang="pt">Todas as Calculadoras</h2>
+    <h2 class="section-title" data-lang="nl">Alle Rekenmachines</h2>
+    <h2 class="section-title" data-lang="pl">Wszystkie Kalkulatory</h2>
+    <h2 class="section-title" data-lang="tr">Tüm Hesap Makineleri</h2>
+    <h2 class="section-title" data-lang="ro">Toate Calculatoarele</h2>
+    <h2 class="section-title" data-lang="cs">Všechny Kalkulačky</h2>
+    <h2 class="section-title" data-lang="hu">Összes Kalkulátor</h2>
+    <h2 class="section-title" data-lang="el">Όλοι οι Υπολογιστές</h2>
+    <h2 class="section-title" data-lang="ru">Все Калькуляторы</h2>
+    <h2 class="section-title" data-lang="uk">Всі Калькулятори</h2>
+    <p class="section-sub" style="margin-bottom:32px;">
+        <span data-lang="en visible">One app, every calculation you'll ever need as a trader.</span>
+        <span data-lang="it">Un'app, ogni calcolo di cui avrai mai bisogno come trader.</span>
+        <span data-lang="fr">Une app, chaque calcul dont vous aurez besoin en tant que trader.</span>
+        <span data-lang="es">Una app, cada cálculo que necesitarás como trader.</span>
+        <span data-lang="de">Eine App, jede Berechnung die Sie als Trader jemals brauchen werden.</span>
+        <span data-lang="pt">Um app, cada cálculo que você precisará como trader.</span>
+        <span data-lang="nl">Één app, elke berekening die u ooit als trader nodig heeft.</span>
+        <span data-lang="pl">Jedna aplikacja, każde obliczenie, którego będziesz potrzebować jako trader.</span>
+        <span data-lang="tr">Bir uygulama, trader olarak ihtiyaç duyacağınız her hesaplama.</span>
+        <span data-lang="ro">O aplicație, fiecare calcul de care vei avea nevoie ca trader.</span>
+        <span data-lang="cs">Jedna aplikace, každý výpočet, který jako trader potřebujete.</span>
+        <span data-lang="hu">Egy app, minden számítás, amire traderként valaha szüksége lesz.</span>
+        <span data-lang="el">Μία εφαρμογή, κάθε υπολογισμός που θα χρειαστείτε ποτέ ως trader.</span>
+        <span data-lang="ru">Одно приложение, каждый расчёт, который вам когда-либо понадобится как трейдеру.</span>
+        <span data-lang="uk">Один додаток, кожен розрахунок, який вам коли-небудь знадобиться як трейдеру.</span>
+    </p>
+    <div class="tools-grid">
+        <div class="tool-item"><span class="icon">📊</span> Stocks P&L</div>
+        <div class="tool-item"><span class="icon">📉</span> Stocks Breakeven</div>
+        <div class="tool-item"><span class="icon">🎯</span> Stocks Target R/R</div>
+        <div class="tool-item"><span class="icon">🌱</span> Stocks Growth</div>
+        <div class="tool-item"><span class="icon">🔮</span> Options P&L</div>
+        <div class="tool-item"><span class="icon">📐</span> Options Greeks</div>
+        <div class="tool-item"><span class="icon">🔄</span> Straddle Strategy</div>
+        <div class="tool-item"><span class="icon">⛽</span> Futures P&L</div>
+        <div class="tool-item"><span class="icon">🌾</span> Commodities P&L</div>
+        <div class="tool-item"><span class="icon">🔢</span> Unit Converter</div>
+        <div class="tool-item"><span class="icon">💹</span> Forex Calculator</div>
+        <div class="tool-item"><span class="icon">🪙</span> Crypto Calculator</div>
+        <div class="tool-item"><span class="icon">🏦</span> ETF Analyzer</div>
+        <div class="tool-item"><span class="icon">⚡</span> Quick Trade</div>
+        <div class="tool-item"><span class="icon">🛡️</span> Risk Calculator</div>
+        <div class="tool-item"><span class="icon">🧾</span> Tax Estimator</div>
+        <div class="tool-item"><span class="icon">📓</span> Trade Journal</div>
+        <div class="tool-item"><span class="icon">⚖️</span> Portfolio Rebalance</div>
+        <div class="tool-item"><span class="icon">🎓</span> Training Sessions</div>
+        <div class="tool-item"><span class="icon">📈</span> TradingView Charts</div>
+    </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════ LANGUAGES ══ -->
+<section class="section">
+    <h2 class="section-title" data-lang="en visible">Available in 15 Languages</h2>
+    <h2 class="section-title" data-lang="it">Disponibile in 15 Lingue</h2>
+    <h2 class="section-title" data-lang="fr">Disponible en 15 Langues</h2>
+    <h2 class="section-title" data-lang="es">Disponible en 15 Idiomas</h2>
+    <h2 class="section-title" data-lang="de">In 15 Sprachen verfügbar</h2>
+    <h2 class="section-title" data-lang="pt">Disponível em 15 Idiomas</h2>
+    <h2 class="section-title" data-lang="nl">Beschikbaar in 15 Talen</h2>
+    <h2 class="section-title" data-lang="pl">Dostępna w 15 Językach</h2>
+    <h2 class="section-title" data-lang="tr">15 Dilde Mevcut</h2>
+    <h2 class="section-title" data-lang="ro">Disponibil în 15 Limbi</h2>
+    <h2 class="section-title" data-lang="cs">Dostupné v 15 Jazycích</h2>
+    <h2 class="section-title" data-lang="hu">15 Nyelven Elérhető</h2>
+    <h2 class="section-title" data-lang="el">Διαθέσιμο σε 15 Γλώσσες</h2>
+    <h2 class="section-title" data-lang="ru">Доступно на 15 Языках</h2>
+    <h2 class="section-title" data-lang="uk">Доступно 15 Мовами</h2>
+    <div class="lang-chips">
+        <div class="lang-chip">🇬🇧 English</div>
+        <div class="lang-chip">🇮🇹 Italiano</div>
+        <div class="lang-chip">🇫🇷 Français</div>
+        <div class="lang-chip">🇪🇸 Español</div>
+        <div class="lang-chip">🇩🇪 Deutsch</div>
+        <div class="lang-chip">🇵🇹 Português</div>
+        <div class="lang-chip">🇳🇱 Nederlands</div>
+        <div class="lang-chip">🇵🇱 Polski</div>
+        <div class="lang-chip">🇹🇷 Türkçe</div>
+        <div class="lang-chip">🇷🇴 Română</div>
+        <div class="lang-chip">🇨🇿 Čeština</div>
+        <div class="lang-chip">🇭🇺 Magyar</div>
+        <div class="lang-chip">🇬🇷 Ελληνικά</div>
+        <div class="lang-chip">🇷🇺 Русский</div>
+        <div class="lang-chip">🇺🇦 Українська</div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════ FOOTER ══ -->
+<footer>
+    <p style="margin-bottom:10px;">
+        <strong>TradeCalcPro</strong> &nbsp;·&nbsp; DCComm Dev &nbsp;·&nbsp; © 2026
+    </p>
+    <p>
+        <a href="privacy_policy.html">Privacy Policy</a>
+        &nbsp;·&nbsp;
+        <a href="mailto:support@dccomm.eu">support@dccomm.eu</a>
+    </p>
+    <p style="margin-top:12px; font-size:0.78rem; color:#555;">
+        TradeCalcPro is a calculation tool for educational purposes only. Not financial advice. Trading involves risk.
+    </p>
+</footer>
+
+<script>
+    function setLang(lang) {
+        // Update buttons
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+
+        // Show/hide all data-lang blocks
+        document.querySelectorAll('[data-lang]').forEach(el => {
+            el.classList.remove('visible');
+            const langs = el.getAttribute('data-lang').split(' ');
+            if (langs.includes(lang)) el.classList.add('visible');
+        });
+        document.querySelectorAll('[data-lang-inline]').forEach(el => {
+            el.classList.remove('visible');
+            if (el.getAttribute('data-lang-inline') === lang) el.classList.add('visible');
+        });
+
+        document.documentElement.lang = lang;
+    }
+
+    // Init: show English
+    document.querySelectorAll('[data-lang]').forEach(el => {
+        const langs = el.getAttribute('data-lang').split(' ');
+        if (langs.includes('en') || langs.includes('visible')) el.classList.add('visible');
+    });
+</script>
+</body>
+</html>
